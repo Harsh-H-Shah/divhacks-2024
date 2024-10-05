@@ -1,0 +1,19 @@
+{
+  "name": "divhacks-2024",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harsh-H-Shah/divhacks-2024.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Harsh-H-Shah/divhacks-2024/issues"
+  },
+  "homepage": "https://github.com/Harsh-H-Shah/divhacks-2024#readme"
+}
