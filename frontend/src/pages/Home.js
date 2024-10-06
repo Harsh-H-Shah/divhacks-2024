@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Layout, Input, Menu, Switch, Slider, Rate, Button, Card, List, Typography, Space } from 'antd';
-import { UserOutlined, ArrowUpOutlined, ArrowDownOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Layout, List, Typography, Space } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import ServiceCard from '../components/ServiceCard';
+import FilterSidebar from '../components/FilterSidebar';
+import AppHeader from '../components/AppHeader';
 
-const { Header, Sider, Content } = Layout;
-const { Search } = Input;
+import math from '../assets/math.jpeg';
+import physics from '../assets/physics.jpeg';
+import chemistry from '../assets/chemistry.jpeg';
+import english from '../assets/english.jpeg';
+import history from '../assets/history.jpeg';
+
+const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
 // Sample time series data for a single tutoring service
@@ -15,76 +23,87 @@ const timeSeriesData = [
   { week: 'Week 4', price: 58 },
 ];
 
+// Dummy data for services
+const dummyServices = [
+  {
+    id: 1,
+    name: 'Advanced Math Tutoring',
+    provider: 'John Doe',
+    rating: 4.5,
+    price: '$50/hr',
+    image: 'https://via.placeholder.com/300',
+    category: 'Mathematics',
+    duration: '1 hour',
+    img: math,
+  },
+  {
+    id: 2,
+    name: 'Physics Tutoring',
+    provider: 'Jane Smith',
+    rating: 4.0,
+    price: '$40/hr',
+    image: 'https://via.placeholder.com/300',
+    category: 'Science',
+    duration: '1 hour',
+    img: physics,
+  },
+  {
+    id: 3,
+    name: 'English Literature Tutoring',
+    provider: 'Alice Johnson',
+    rating: 4.8,
+    price: '$45/hr',
+    image: 'https://via.placeholder.com/300',
+    category: 'English',
+    duration: '1 hour',
+    img: english,
+  },
+  {
+    id: 4,
+    name: 'History Tutoring',
+    provider: 'Bob Brown',
+    rating: 4.2,
+    price: '$35/hr',
+    image: 'https://via.placeholder.com/300',
+    category: 'History',
+    duration: '1 hour',
+    img: history,
+  },
+  {
+    id: 5,
+    name: 'Chemistry Tutoring',
+    provider: 'Eve Davis',
+    rating: 4.7,
+    price: '$55/hr',
+    image: 'https://via.placeholder.com/300',
+    category: 'Science',
+    duration: '1 hour',
+    img: chemistry,
+  }
+];
+
 const Home = () => {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ background: '#fff', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div className="logo">Logo</div>
-        <Search placeholder="Search for a topic" style={{ width: 300 }} />
-        <Space>
-          <UserOutlined style={{ fontSize: '18px' }} />
-        </Space>
-      </Header>
+      <AppHeader />
       <Layout>
-      <Sider
-          collapsible
-          collapsed={collapsed}
-          onCollapse={setCollapsed}
-          width={200}
-          style={{ background: '#fff', padding: '20px' }}
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={(broken) => setCollapsed(broken)}
-        >
-          <Title level={4}>Filters</Title>
-          <Menu mode="vertical">
-            <Menu.SubMenu key="category" title="Category">
-              {/* Add category options */}
-            </Menu.SubMenu>
-            <Menu.Item key="price" style={{ marginRight: '20px' }}>
-              Price Range
-              <Slider range defaultValue={[20, 50]} style={{ width: '40px' }}/>
-            </Menu.Item>
-            <Menu.Item key="rating">
-              Rating
-              <Rate />
-            </Menu.Item>
-            <Menu.Item key="availability">
-              <Switch /> Available Now
-            </Menu.Item>
-          </Menu>
-          <Button type="primary" block style={{ marginTop: '20px' }}>Apply Filters</Button>
-        </Sider>
-        <Content style={{ marginLeft: collapsed ? '0' : '200px', paddingTop: '20px', paddingRight: '20px', backgroundColor: '#fff' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-            {/* Example service card */}
-            <Card
-              hoverable
-              cover={<img alt="example" src="https://via.placeholder.com/150" />}
-              style={{ maxWidth: 300 }}
-            >
-              <Card.Meta
-                title="Service Name"
-                description={
-                  <>
-                    <Text>Provider Name</Text>
-                    <Rate disabled defaultValue={4} />
-                    <Text strong>$50</Text>
-                  </>
-                }
-              />
-              <Button type="primary" block style={{ marginTop: '10px' }}>Book Now</Button>
-            </Card>
-            {/* Repeat for more services */}
-          </div>
+        <FilterSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <Content style={{ padding: '24px' }}>
+          <ServiceCard services={dummyServices} />
         </Content>
-        <Sider width={300} style={{ backgroundColor: '#fff', paddingTop: '20px', paddingRight: '20px' }}>
+        <Sider
+          width={300}
+          style={{
+            backgroundColor: '#fff',
+            padding: '20px',
+          }}
+        >
           {/* Time Series Chart */}
           <Title level={4}>Price Trend for Math Tutoring Service</Title>
           <LineChart
-            width={280}
+            width={260}
             height={200}
             data={timeSeriesData}
             margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
@@ -106,7 +125,7 @@ const Home = () => {
               { name: 'Topic 2', price: 80, change: -3 },
               // Add more topics
             ]}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
                   title={item.name}
@@ -114,9 +133,13 @@ const Home = () => {
                     <Space>
                       <Text strong>${item.price}</Text>
                       {item.change > 0 ? (
-                        <Text type="success"><ArrowUpOutlined /> {item.change}%</Text>
+                        <Text type="success">
+                          <ArrowUpOutlined /> {item.change}%
+                        </Text>
                       ) : (
-                        <Text type="danger"><ArrowDownOutlined /> {Math.abs(item.change)}%</Text>
+                        <Text type="danger">
+                          <ArrowDownOutlined /> {Math.abs(item.change)}%
+                        </Text>
                       )}
                     </Space>
                   }
