@@ -1,0 +1,4 @@
+/node_modules
+/test/Lock.js
+/contracts/Lock.sol
+/ignition/modules/Lock.js
