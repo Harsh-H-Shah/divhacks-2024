@@ -30,13 +30,13 @@ const Landing = () => {
           style={styles.menu}
         >
           <Menu.Item key="home">Home</Menu.Item>
-          <Menu.Item key="services">Services</Menu.Item>
+          {/* <Menu.Item key="services">Services</Menu.Item> */}
           <Menu.Item key="contact">Contact</Menu.Item>
-          <Menu.Item key="about">About</Menu.Item>
+          {/* <Menu.Item key="about">About</Menu.Item> */}
         </Menu>
-        <Link to="/signup">
-          <Button type="primary" style={styles.button}>
-            Get Started
+        <Link to="/login">
+          <Button type="link" style={styles.button}>
+            Login
           </Button>
         </Link>
       </Header>
