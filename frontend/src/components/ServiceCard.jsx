@@ -16,6 +16,7 @@ import {
   DollarOutlined,
   HeartOutlined,
 } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 const { Text, Paragraph } = Typography;
 
@@ -76,9 +77,11 @@ function ServiceCard({ service }) {
         <Text strong style={{ fontSize: 18 }}>
           <DollarOutlined /> {price}
         </Text>
-        <Button type="primary" block style={{ marginTop: '8px' }}>
-          Book Now
-        </Button>
+        <Link to="/book">
+          <Button type="primary" block style={{ marginTop: '8px' }}>
+            Book Now
+          </Button>
+        </Link>
       </Space>
     </Card>
   );
