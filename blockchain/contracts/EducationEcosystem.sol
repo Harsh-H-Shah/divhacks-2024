@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-// import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./EduPoints.sol";
 contract EducationEcosystem is Ownable {
     EduPoints public epToken;
@@ -15,34 +13,19 @@ contract EducationEcosystem is Ownable {
         uint256 epBalance;
     }
 
-    // struct Service {
-    //     uint256 service_id;
-    //     string title;
-    //     address provider;
-    //     address consumer;
-    //     uint256 cost;
-    //     ServiceStatus status;
-    // }
-
     struct Transaction {
         address _to;
         address _from;
-        uint256 _cost;
-        
+        uint256 _cost; 
     }
 
-    enum ServiceStatus { Created, InProgress, Completed, Cancelled }
 
     mapping(address => User) public users;
-    mapping(uint256 => Service) public services;
-    uint256 public serviceCounter;
+    mapping(uint256 => Transaction) public transactions;
+    uint256 public transactionCounter;
 
     event UserRegistered(address indexed walletId, string username);
-    event EPEarned(address indexed user, uint256 amount);
-    event EPSpent(address indexed user, uint256 amount);
-    event ServiceCreated(uint256 indexed serviceId, string title, address providerId);
-    event ServiceRequested(uint256 indexed serviceId, address consumerId);
-    event ServiceStatusUpdated(uint256 indexed serviceId, string status);
+    event EPTransferred(address indexed from, address indexed to, uint256 amount);
 
 
     constructor(uint256 initialSupply) Ownable(msg.sender) {
@@ -50,61 +33,44 @@ contract EducationEcosystem is Ownable {
         serviceCounter = 0;
     }
 
-   function registerUser(string memory _username) external {
-        require(users[msg.sender].walletId != address(0), "User already registered");
-        users[msg.sender] = User(_username,true, msg.sender,0);
+    function registerUser(string memory _username,  address _walletId) external {
+        require(!users[_walletId].isRegistered, "User is already registered");
+        require(bytes(_username).length > 0, "Username cannot be empty");
+        require(_walletId != address(0), "Invalid wallet address");
+
+        users[_walletId] = User({
+            username: _username,
+            isRegistered: true,
+            walletId: msg.sender,
+            epBalance: 0
+        });
+
         emit UserRegistered(msg.sender, _username);
     }
 
-    function earnEP(address _user, uint256 _amount) external onlyOwner {
-        require(users[_user].walletId != address(0), "User not registered");
-        epToken.mint(_user, _amount);
-        users[_user].epBalance += _amount;
-        emit EPEarned(_user, _amount);
-    }
+    function transferEP(address _from, address _to, uint256 _cost) external {
+        require(users[_from].isRegistered, "Sender is not registered");
+        require(users[_to].isRegistered, "Receiver is not registered");
+        require(users[_from].epBalance >= _cost, "Insufficient EP balance");
+        require(_from != _to, "Cannot transfer to self");
 
-    function spendEP(uint256 _amount) external {
-        require(users[msg.sender].walletId != address(0), "User not registered");
-        require(users[msg.sender].epBalance >= _amount, "Insufficient EP balance");
-        users[msg.sender].epBalance -= _amount;
-        epToken.burn(_amount);
-        emit EPSpent(msg.sender, _amount);
-    }
+        bool success = epToken.transferFrom(_from, _to, _cost);
+        require(success, "Transfer failed");
+        // Deduct EP from sender
+        users[_from].epBalance -= _cost;
 
-    function createService(uint256 _title, uint256 _cost) external {
-        require(users[msg.sender].walletId != address(0), "User not registered");
-        serviceCounter++;
-        services[serviceCounter] = Service(_title, serviceCounter, msg.sender, address(0), "Available", _cost);
-        emit ServiceCreated(serviceCounter, _title, msg.sender);
-    }
+        // Add EP to receiver
+        users[_to].epBalance += _cost;
 
-    function requestService(uint256 _serviceId) external {
-        require(users[msg.sender].walletId != address(0), "User not registered");
-        require(services[_serviceId].serviceId != 0, "Service does not exist");
-        require(services[_serviceId].consumerId == address(0), "Service already taken");
-        require(users[msg.sender].epBalance >= services[_serviceId].cost, "Insufficient EP balance");
+        // Create and store the transaction
+        Transaction memory newTransaction = Transaction({
+            _to: _to,
+            _from: _from,
+            _cost: _cost
+        });
+        transactions.push(newTransaction);
 
-        services[_serviceId].consumerId = msg.sender;
-        services[_serviceId].status = "Requested";
-        users[msg.sender].epBalance -= services[_serviceId].cost;
-        users[services[_serviceId].providerId].epBalance += services[_serviceId].cost;
-
-        emit ServiceRequested(_serviceId, msg.sender);
-    }
-
-    function updateServiceStatus(uint256 _serviceId, string memory _status) external {
-        require(services[_serviceId].serviceId != 0, "Service does not exist");
-        require(services[_serviceId].providerId == msg.sender, "Only provider can update status");
-        services[_serviceId].status = _status;
-        emit ServiceStatusUpdated(_serviceId, _status);
-    }
-
-    function getUserEPBalance(address _user) external view returns (uint256) {
-        return users[_user].epBalance;
-    }
-
-    function getServiceDetails(uint256 _serviceId) external view returns (Service memory) {
-        require(services[_serviceId].serviceId != 0, "Service does not exist");
-        return services[_serviceId];
+        // Emit an event for the transaction
+        emit EPTransferred(_from, _to, _cost);
     }
 }
