@@ -31,7 +31,7 @@ contract Ecosystem is Ownable {
 
     constructor(uint256 initialSupply) Ownable(msg.sender) {
         epToken = new EduPoints(initialSupply);
-        serviceCounter = 0;
+        transactionCounter = 0;
     }
 
     function registerUser(string memory _username,  address _walletId) external {
@@ -69,7 +69,7 @@ contract Ecosystem is Ownable {
             _from: _from,
             _cost: _cost
         });
-        transactions.push(newTransaction);
+        transactions[transactionCounter++] = newTransaction;
 
         // Emit an event for the transaction
         emit EPTransferred(_from, _to, _cost);

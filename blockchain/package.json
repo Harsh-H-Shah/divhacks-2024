@@ -19,6 +19,7 @@
     "hardhat": "^2.22.12"
   },
   "dependencies": {
+    "@openzeppelin/test-helpers": "^0.5.16",
     "verbwire": "^1.0.6"
   }
 }
