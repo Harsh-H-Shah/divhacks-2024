@@ -4,17 +4,13 @@ import {
   Input,
   Button,
   Typography,
-  InputNumber,
   Select,
-  Upload,
   Space,
-  Divider,
 } from 'antd';
 import {
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
-  FileOutlined,
   MinusCircleOutlined,
   LockOutlined,
   PlusOutlined,
@@ -74,15 +70,14 @@ const Signup = () => {
     },
     skillRow: {
       display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'baseline',
       marginBottom: '16px',
+      gap: '16px',
     },
     skillInput: {
-      width: '45%',
+      flex: 1,
     },
     skillLevel: {
-      width: '45%',
+      width: '140px',
     },
     removeButton: {
       color: '#e53e3e',
@@ -93,90 +88,78 @@ const Signup = () => {
     <div style={styles.pageContainer}>
       <div style={styles.authContainer}>
         <Title level={2} style={styles.title}>
-          Join Our Community
+          Sign Up
         </Title>
-        <div
-          style={{
-            textAlign: 'center',
-            marginBottom: '24px',
-            fontSize: '14px',
-            color: '#4a5568',
-          }}
-        >
-          Already have an account?{' '}
-          <a href="/login" style={{ color: '#4299e1', fontWeight: 'bold' }}>
-            Log in
-          </a>
-        </div>
-        <Form name="signup_form" onFinish={onFinish} layout="vertical">
+        <Form name="signup" onFinish={onFinish} layout="vertical">
           <Form.Item
-            name="phone"
-            label="Phone Number"
+            name="fullName"
             rules={[
-              { required: true, message: 'Please input your phone number!' },
+              { required: true, message: 'Please input your full name!' },
+              {
+                pattern: /^[a-zA-Z\s]{2,50}$/,
+                message:
+                  'Name should contain only letters and spaces, 2-50 characters long',
+              },
             ]}
           >
-            <InputNumber
-              style={{ ...styles.input, width: '100%' }}
-              prefix={<PhoneOutlined />}
-              placeholder="Your phone number"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="name"
-            label="Full Name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
-          >
             <Input
-              style={styles.input}
               prefix={<UserOutlined />}
-              placeholder="Your full name"
+              placeholder="Full Name"
+              style={styles.input}
             />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label="Email Address"
             rules={[
               { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' },
+              { type: 'email', message: 'Please enter a valid email address!' },
+              {
+                pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                message: 'Please enter a valid email address!',
+              },
             ]}
           >
             <Input
-              style={styles.input}
               prefix={<MailOutlined />}
-              placeholder="Your email address"
+              placeholder="Email"
+              style={styles.input}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="Password"
             rules={[
               { required: true, message: 'Please input your password!' },
               {
-                min: 8,
-                message: 'Password must be at least 8 characters long',
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                message:
+                  'Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a special character',
               },
             ]}
           >
             <Input.Password
-              style={styles.input}
               prefix={<LockOutlined />}
-              placeholder="Create a strong password"
+              placeholder="Password"
+              style={styles.input}
             />
           </Form.Item>
 
-          <Divider />
-
-          <Form.Item name="bio" label="Bio (200 words)">
-            <TextArea
-              style={{ ...styles.input, height: 'auto' }}
-              placeholder="Tell us about yourself"
-              maxLength={200}
-              showCount
-              rows={4}
+          <Form.Item
+            name="phone"
+            rules={[
+              { required: true, message: 'Please input your phone number!' },
+              {
+                pattern: /^\+?[1-9]\d{1,14}$/,
+                message: 'Please enter a valid phone number!',
+              },
+            ]}
+          >
+            <Input
+              prefix={<PhoneOutlined />}
+              placeholder="Phone Number"
+              style={styles.input}
             />
           </Form.Item>
 
@@ -189,45 +172,30 @@ const Signup = () => {
                       {...restField}
                       name={[name, 'skill']}
                       rules={[
-                        {
-                          required: true,
-                          message: 'Please input skill or delete this field.',
-                        },
+                        { required: true, message: 'Please input skill or delete this field' },
+                        { pattern: /^[a-zA-Z\s]{2,30}$/, message: 'Skill should contain only letters and spaces, 2-30 characters long' }
                       ]}
                       style={styles.skillInput}
                     >
-                      <Input placeholder="Skill" style={styles.input} />
+                      <Input placeholder="Skill" />
                     </Form.Item>
                     <Form.Item
                       {...restField}
                       name={[name, 'level']}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please select skill level.',
-                        },
-                      ]}
+                      rules={[{ required: true, message: 'Please select skill level' }]}
                       style={styles.skillLevel}
                     >
-                      <Select style={styles.input} placeholder="Skill Level">
-                        <Option value="basic">Basic</Option>
+                      <Select placeholder="Level">
+                        <Option value="beginner">Beginner</Option>
                         <Option value="intermediate">Intermediate</Option>
                         <Option value="advanced">Advanced</Option>
                       </Select>
                     </Form.Item>
-                    <MinusCircleOutlined
-                      onClick={() => remove(name)}
-                      style={styles.removeButton}
-                    />
+                    <MinusCircleOutlined onClick={() => remove(name)} style={styles.removeButton} />
                   </Space>
                 ))}
                 <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add Skill
                   </Button>
                 </Form.Item>
@@ -235,57 +203,23 @@ const Signup = () => {
             )}
           </Form.List>
 
-          <Form.Item name="education" label="Education">
-            <Input style={styles.input} placeholder="Your highest education" />
+          <Form.Item
+            name="bio"
+            rules={[
+              { required: true, message: 'Please input your bio!' },
+              { max: 500, message: 'Bio should not exceed 500 characters' },
+            ]}
+          >
+            <TextArea
+              rows={4}
+              placeholder="Tell us about yourself"
+              style={styles.input}
+            />
           </Form.Item>
-
-          <Form.List name="certificates">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Space key={key} style={styles.skillRow} align="baseline">
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'title']}
-                      style={styles.skillInput}
-                    >
-                      <Input
-                        placeholder="Certificate Title"
-                        style={styles.input}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'file']}
-                      style={styles.skillLevel}
-                    >
-                      <Upload>
-                        <Button icon={<FileOutlined />}>Upload</Button>
-                      </Upload>
-                    </Form.Item>
-                    <MinusCircleOutlined
-                      onClick={() => remove(name)}
-                      style={styles.removeButton}
-                    />
-                  </Space>
-                ))}
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
-                    Add Certificate
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" style={styles.button}>
-              Create Account
+              Sign Up
             </Button>
           </Form.Item>
         </Form>
