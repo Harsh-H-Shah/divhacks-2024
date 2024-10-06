@@ -39,36 +39,28 @@ const UserSchema = new mongoose.Schema({
 const ServiceSchema = new mongoose.Schema({
   title: String,
   description: String,
-  category: String,
-  provider_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    wallet_addr: 'provider_type'
-  },
-  consumer_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    wallet_addr: 'consumer_type'
-  },
-  provider_type: {
-    type: String,
-    enum: ['User', 'Organization']
-  },
-  consumer_type: {
-    type: String,
-    enum: ['User', 'Organization']
-  },
-  availability: [Date]
-}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
-
-
+  current_price: Number,
+  previous_rates: [Number]
+});
 
 // Transactions Schema
 const TransactionSchema = new mongoose.Schema({
+  provider: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    wallet_addr: { type: String, ref: 'User.wallet_addr', required: true }
+  },
+  consumer: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    wallet_addr: { type: String, ref: 'User.wallet_addr', required: true }
+  },
   status: {
     type: String,
-    enum: ['pending', 'completed', 'cancelled']
+    enum: ['pending', 'completed', 'cancelled'],
+    default: 'pending'
   },
-  cost: Number
+  cost: { type: Number, required: true }
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
+
 
 // Reviews Schema
 const ReviewSchema = new mongoose.Schema({
