@@ -3,7 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EduPoints.sol";
-contract EducationEcosystem is Ownable {
+
+contract Ecosystem is Ownable {
     EduPoints public epToken;
 
     struct User {
