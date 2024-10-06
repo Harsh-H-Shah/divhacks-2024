@@ -1,23 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
-import { PhoneOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
 const Login = () => {
-  const [otpSent, setOtpSent] = useState(false);
-
   const onFinish = (values) => {
     console.log('Received values:', values);
-    // Here you would typically verify the OTP with your backend
     message.success('Login successful!');
-  };
-
-  const sendOTP = (values) => {
-    console.log('Sending OTP to:', values.phone);
-    // Here you would typically send the OTP to the user's phone
-    message.success('OTP sent successfully!');
-    setOtpSent(true);
   };
 
   const styles = {
@@ -26,76 +16,81 @@ const Login = () => {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f0f2f5',
       padding: '40px 0',
     },
     authContainer: {
       width: '100%',
       maxWidth: '400px',
-      padding: '40px',
-      backgroundColor: '#f0f0f0',
-      borderRadius: '4px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      padding: '48px',
+      backgroundColor: '#ffffff',
+      borderRadius: '16px',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.05)',
     },
     title: {
-      color: '#333333',
+      color: '#1a202c',
       textAlign: 'center',
-      marginBottom: '24px',
+      marginBottom: '32px',
+      fontSize: '28px',
+      fontWeight: 'bold',
     },
     input: {
       backgroundColor: '#ffffff',
-      border: '1px solid #d9d9d9',
-      borderRadius: '2px',
-      color: '#333333',
+      border: '1px solid #e2e8f0',
+      borderRadius: '8px',
+      color: '#4a5568',
+      height: '48px',
     },
     button: {
       width: '100%',
-      height: '40px',
-      backgroundColor: '#333333',
+      height: '48px',
+      backgroundColor: '#4299e1',
       border: 'none',
-      borderRadius: '2px',
+      borderRadius: '8px',
       color: '#ffffff',
       fontWeight: 'bold',
+      fontSize: '16px',
+      marginTop: '24px',
+      transition: 'background-color 0.3s ease',
     },
     signupLink: {
       textAlign: 'center',
-      marginTop: '16px',
+      marginTop: '24px',
+      color: '#4a5568',
     },
   };
 
   return (
     <div style={styles.pageContainer}>
       <div style={styles.authContainer}>
-        <Title level={2} style={styles.title}>Login</Title>
+        <Title level={2} style={styles.title}>Welcome Back</Title>
         <Form
           name="login_form"
-          onFinish={otpSent ? onFinish : sendOTP}
+          onFinish={onFinish}
         >
           <Form.Item
-            name="phone"
-            rules={[{ required: true, message: 'Please input your phone number!' }]}
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
           >
             <Input
-              prefix={<PhoneOutlined />}
-              placeholder="Phone Number"
+              prefix={<UserOutlined />}
+              placeholder="Username"
               style={styles.input}
             />
           </Form.Item>
-          {otpSent && (
-            <Form.Item
-              name="otp"
-              rules={[{ required: true, message: 'Please input the OTP!' }]}
-            >
-              <Input
-                prefix={<LockOutlined />}
-                placeholder="Enter OTP"
-                style={styles.input}
-              />
-            </Form.Item>
-          )}
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Password"
+              style={styles.input}
+            />
+          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" style={styles.button}>
-              {otpSent ? 'Verify OTP' : 'Send OTP'}
+              Log In
             </Button>
           </Form.Item>
         </Form>
