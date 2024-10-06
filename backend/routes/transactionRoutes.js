@@ -1,4 +1,4 @@
-const {contract, web3} = require('./server');
+const {contract, web3} = require('../server');
 
 const express = require('express');
 const router =  express.Router();

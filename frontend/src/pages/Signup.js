@@ -4,25 +4,61 @@ import {
   Input,
   Button,
   Typography,
-  Select,
   Space,
+  message,
 } from 'antd';
 import {
   UserOutlined,
-  PhoneOutlined,
   MailOutlined,
-  MinusCircleOutlined,
   LockOutlined,
+  MinusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
 
 const Signup = () => {
-  const onFinish = (values) => {
-    console.log('Received values:', values);
+
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      const formattedValues = {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        profile: {
+          skills: values.skills,
+          education: values.education,
+          bio: values.bio,
+        },
+      };
+      console.log('Sending data:', formattedValues);
+  
+      const response = await fetch('http://localhost:5000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedValues),
+      });
+
+      if (!response.ok) {
+        throw new Error('Signup failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('user', JSON.stringify(data));
+      message.success('Signup successful!');
+
+      navigate('/home');
+
+    } catch (error) {
+      console.error('Error during signup:', error);
+      message.error('Signup failed. Please try again.');
+    }
   };
 
   const styles = {
@@ -92,19 +128,18 @@ const Signup = () => {
         </Title>
         <Form name="signup" onFinish={onFinish} layout="vertical">
           <Form.Item
-            name="fullName"
+            name="username"
             rules={[
-              { required: true, message: 'Please input your full name!' },
+              { required: true, message: 'Please input your username!' },
               {
-                pattern: /^[a-zA-Z\s]{2,50}$/,
-                message:
-                  'Name should contain only letters and spaces, 2-50 characters long',
+                pattern: /^[a-zA-Z0-9_]{3,20}$/,
+                message: 'Username should be 3-20 characters long and can contain letters, numbers, and underscores',
               },
             ]}
           >
             <Input
               prefix={<UserOutlined />}
-              placeholder="Full Name"
+              placeholder="Username"
               style={styles.input}
             />
           </Form.Item>
@@ -114,10 +149,6 @@ const Signup = () => {
             rules={[
               { required: true, message: 'Please input your email!' },
               { type: 'email', message: 'Please enter a valid email address!' },
-              {
-                pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                message: 'Please enter a valid email address!',
-              },
             ]}
           >
             <Input
@@ -132,10 +163,8 @@ const Signup = () => {
             rules={[
               { required: true, message: 'Please input your password!' },
               {
-                pattern:
-                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                message:
-                  'Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a special character',
+                min: 8,
+                message: 'Password must be at least 8 characters long',
               },
             ]}
           >
@@ -146,57 +175,59 @@ const Signup = () => {
             />
           </Form.Item>
 
-          <Form.Item
-            name="phone"
-            rules={[
-              { required: true, message: 'Please input your phone number!' },
-              {
-                pattern: /^\+?[1-9]\d{1,14}$/,
-                message: 'Please enter a valid phone number!',
-              },
-            ]}
-          >
-            <Input
-              prefix={<PhoneOutlined />}
-              placeholder="Phone Number"
-              style={styles.input}
-            />
-          </Form.Item>
-
           <Form.List name="skills">
             {(fields, { add, remove }) => (
               <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Space key={key} style={styles.skillRow} align="baseline">
+                {fields.map((field, index) => (
+                  <Space key={field.key} style={styles.skillRow} align="baseline">
                     <Form.Item
-                      {...restField}
-                      name={[name, 'skill']}
+                      {...field}
+                      validateTrigger={['onChange', 'onBlur']}
                       rules={[
-                        { required: true, message: 'Please input skill or delete this field' },
-                        { pattern: /^[a-zA-Z\s]{2,30}$/, message: 'Skill should contain only letters and spaces, 2-30 characters long' }
+                        { required: true, message: 'Please input a skill or delete this field' },
                       ]}
-                      style={styles.skillInput}
+                      noStyle
                     >
-                      <Input placeholder="Skill" />
+                      <Input placeholder="Skill" style={{ width: '60%' }} />
                     </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'level']}
-                      rules={[{ required: true, message: 'Please select skill level' }]}
-                      style={styles.skillLevel}
-                    >
-                      <Select placeholder="Level">
-                        <Option value="beginner">Beginner</Option>
-                        <Option value="intermediate">Intermediate</Option>
-                        <Option value="advanced">Advanced</Option>
-                      </Select>
-                    </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)} style={styles.removeButton} />
+                    {fields.length > 1 && (
+                      <MinusCircleOutlined onClick={() => remove(field.name)} style={styles.removeButton} />
+                    )}
                   </Space>
                 ))}
                 <Form.Item>
                   <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add Skill
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+
+          <Form.List name="education">
+  {(fields, { add, remove }) => (
+    <>
+      {fields.map((field) => (
+        <Space key={field.key} style={styles.skillRow} align="baseline">
+          <Form.Item
+            key={field.key}
+            {...field}
+            validateTrigger={['onChange', 'onBlur']}
+            rules={[
+              { required: true, message: 'Please input a skill or delete this field' },
+            ]}
+            noStyle
+          >
+            <Input placeholder="Skill" style={{ width: '60%' }} />
+          </Form.Item>
+          {fields.length > 1 && (
+            <MinusCircleOutlined onClick={() => remove(field.name)} style={styles.removeButton} />
+          )}
+        </Space>
+      ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                    Add Education
                   </Button>
                 </Form.Item>
               </>

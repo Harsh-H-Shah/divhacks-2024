@@ -1,6 +1,7 @@
 const { Web3 } = require('web3');
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 // const cors = require('cors');
 const userRoutes = require('./routes/userRoutes.js');
 const serviceRoutes = require('./routes/serviceRoutes');
@@ -36,6 +37,7 @@ const app = express();
 
 // app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 // app.use(
 //   session({
@@ -53,6 +55,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with your frontend's URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Routes will be added here
 app.use('/users', userRoutes);

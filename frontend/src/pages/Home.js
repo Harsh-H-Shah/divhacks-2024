@@ -82,16 +82,56 @@ const dummyServices = [
   }
 ];
 
+
+
 const Home = () => {
   const [collapsed, setCollapsed] = useState(true);
+  const [appliedFilters, setAppliedFilters] = useState([]);
+  const filterServices = () => {
+    return dummyServices.filter((service) => {
+      let matchesCategory = true;
+      let matchesPrice = true;
+      let matchesRating = true;
+      let matchesAvailability = true;
+  
+      for (let i = 0; i < appliedFilters.length; i++) {
+        const filter = appliedFilters[i];
+        
+        if (filter.type === 'category') {
+          matchesCategory = filter.value.includes(service.category);
+        } else if (filter.type === 'price') {
+          const servicePrice = parseInt(service.price.slice(1));
+          matchesPrice = servicePrice >= filter.value[0] && servicePrice <= filter.value[1];
+        } else if (filter.type === 'rating') {
+          matchesRating = service.rating >= filter.value;
+        } else if (filter.type === 'availability') {
+          // Implement actual availability logic here
+          matchesAvailability = true;
+        }
+  
+        if (!matchesCategory || !matchesPrice || !matchesRating || !matchesAvailability) {
+          return false;
+        }
+      }
+  
+      return true;
+    });
+  };
+  const updateFilters = (newFilters) => {
+    setAppliedFilters(newFilters);
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <AppHeader />
       <Layout>
-        <FilterSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <FilterSidebar 
+  collapsed={collapsed} 
+  setCollapsed={setCollapsed} 
+  updateFilters={updateFilters}
+/>
         <Content style={{ padding: '24px' }}>
-          <ServiceCard services={dummyServices} />
+          <ServiceCard services={filterServices()} />
         </Content>
         <Sider
           width={300}

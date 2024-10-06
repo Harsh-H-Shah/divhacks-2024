@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import BookingPage from './pages/Booknow';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -16,10 +17,37 @@ function App() {
           <Route path="/login" element={<Login/>} />
           <Route path="/signup" element={<Signup/>} />
           <Route path="/" element={<Landing/>} />
-          <Route path="/home" element={<Home/>} />
-          <Route path="/profile" element={<Profile/>} />
-          <Route path="/about" element={<About/>} />
-          <Route path="/book" element={<BookingPage/>} />
+          <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } 
+        /><Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+          path="/about" 
+          element={
+            <ProtectedRoute>
+              <About />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/book" 
+          element={
+            <ProtectedRoute>
+              <BookingPage />
+            </ProtectedRoute>
+          } 
+        />  
       </Routes>
     </div>
   );

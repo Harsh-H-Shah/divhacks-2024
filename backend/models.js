@@ -4,21 +4,23 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
   username: String,
   email: String,
-  phone_number: Number,
+  password: String,
   auth0_id: String,
   wallet_addr: String,
-  type: {
-         type: String,
-         enum: ['NGO', 'University', 'User']
-   },
+  // type: {
+  //        type: String,
+  //        enum: ['NGO', 'University', 'User']
+  //  },
   profile: {
-    name: String,
+    // name: String,
     bio: String,
+    education: [String],
     skills: [String],
-    education: [String]
   },
-  reputation: Number
+  EP: Number,
+  // reputation: Number
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
+
 
 // // Organizations Schema
 // const OrganizationSchema = new mongoose.Schema({

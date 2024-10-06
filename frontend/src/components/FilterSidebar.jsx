@@ -17,7 +17,7 @@ const { Sider } = Layout;
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
-const FilterSidebar = ({ collapsed, setCollapsed }) => {
+const FilterSidebar = ({ collapsed, setCollapsed, updateFilters }) => {
   const [appliedFilters, setAppliedFilters] = useState([]);
   const [categories, setCategories] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000]);

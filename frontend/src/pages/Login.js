@@ -1,14 +1,42 @@
 import React from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log('Received values:', values);
-    message.success('Login successful!');
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      const response = await fetch('http://localhost:5000/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const data = await response.json();
+      
+      // Save user data in localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      message.success('Login successful!');
+      
+      // Navigate to the home page
+      navigate('/home');
+    } catch (error) {
+      message.error(error.message || 'Login failed. Please try again.');
+    }
   };
+
 
   const styles = {
     pageContainer: {
@@ -95,7 +123,7 @@ const Login = () => {
           </Form.Item>
         </Form>
         <div style={styles.signupLink}>
-          Don't have an account? <a href="/signup">Sign up now!</a>
+          Don't have an account? <Link to="/signup">Sign up now!</Link>
         </div>
       </div>
     </div>
