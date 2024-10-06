@@ -1,3 +1,5 @@
+const {contract, web3} = require('./server');
+
 const express = require('express');
 const router =  express.Router();
 const {Transaction} = require('../models');
@@ -10,7 +12,10 @@ router.post('/', async (req, res) => {
   
       const provider = await User.findOne({ wallet_addr: providerWallet });
       const consumer = await User.findOne({ wallet_addr: consumerWallet });
-  
+      
+      const accounts = await web3.eth.getAccounts();
+      const senderAccount = accounts[0];
+      
       if (!provider || !consumer) {
         return res.status(404).json({ message: 'Provider or consumer not found' });
       }
@@ -29,6 +34,16 @@ router.post('/', async (req, res) => {
   
       await transaction.save();
       res.status(201).json(transaction);
+
+      await contract.methods.transferEP(
+        consumer.wallet_addr, // Assuming your User model has a username field
+        provider.wallet_addr,
+        cost // Assuming your User model has a walletAddress field
+      ).send({
+        from: senderAccount,
+        gas: 1000000 // Adjust the gas limit as needed
+      });
+
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

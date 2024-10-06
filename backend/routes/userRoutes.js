@@ -1,3 +1,4 @@
+const {contract, web3} = require('./server');
 const express = require('express');
 const router =  express.Router();
 const {User} = require('../models'); // Assuming this is where we defined our User model
@@ -10,6 +11,22 @@ router.post('/', async (req, res) => {
     const newUser = new User(req.body);
     await newUser.save();
     res.status(201).json(newUser);
+
+    console.log(req.body);
+
+    // Get the first account from Ganache to use for the transaction
+    const accounts = await web3.eth.getAccounts();
+    const senderAccount = accounts[0];
+
+    // Call the registerUser function on your smart contract
+    await contract.methods.registerUser(
+      newUser.username, // Assuming your User model has a username field
+      walletId = newUser.walletAddress // Assuming your User model has a walletAddress field
+    ).send({
+      from: senderAccount,
+      gas: 1000000 // Adjust the gas limit as needed
+    });
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

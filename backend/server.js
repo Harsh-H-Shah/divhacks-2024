@@ -1,3 +1,4 @@
+const { Web3 } = require('web3');
 const express = require('express');
 const mongoose = require('mongoose');
 // const cors = require('cors');
@@ -7,6 +8,12 @@ const transactionRoutes = require('./routes/transactionRoutes');
 // require('dotenv').config({path:'divhacks-2024\backend\.env'});
 require('dotenv').config();
 // const session = require('express-session');
+
+const EcosystemArtifact = require('../blockchain/build/contracts/Ecosystem.json');
+const EcosystemABI = EcosystemArtifact.abi;
+
+const web3 = new Web3('http://localhost:8545'); // check this one
+const contract = new web3.eth.Contract(EcosystemABI, EcosystemArtifact);
 
 const app = express();
 // const { auth } = require('express-openid-connect');
@@ -55,3 +62,5 @@ app.use('/transaction',transactionRoutes);
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
+
+module.exports = { contract, web3 };
