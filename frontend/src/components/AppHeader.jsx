@@ -7,7 +7,7 @@ import Logo from '../assets/Logo.png';
 const { Header } = Layout;
 const { Search } = Input;
 
-const AppHeader = () => {
+const AppHeader = ({ isProfileSection }) => {
   return (
     <Header
       style={{
@@ -21,32 +21,41 @@ const AppHeader = () => {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img
-          src={Logo}
-          alt="logo"
-          style={{ height: '150px', marginRight: '40px' }}
-        />
-        <Space size="large">
-          <Link to="/">
-            <Button type="link">Home</Button>
-          </Link>
-          <Link to="/about">
-            <Button type="link">About</Button>
-          </Link>
-          <Link to="/contact">
-            <Button type="link">Contact Us</Button>
-          </Link>
-          <Link to="/sponsor">
-            <Button type="link">Sponsor Us</Button>
-          </Link>
-        </Space>
+        <Link to="/home" onClick={(isProfileSection = !isProfileSection)}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src={Logo}
+              alt="logo"
+              style={{ height: '150px', marginRight: '40px' }}
+            />
+          </div>
+        </Link>
+        {isProfileSection && (
+          <Space size="large">
+            <Link to="/about">
+              <Button type="link">About</Button>
+            </Link>
+            <Link to="/contact">
+              <Button type="link">Contact Us</Button>
+            </Link>
+            <Link to="/sponsor">
+              <Button type="link">Sponsor Us</Button>
+            </Link>
+          </Space>
+        )}
       </div>
-      <Search
-        placeholder="Search for skills or services"
-        style={{ width: '40%', maxWidth: '400px' }}
-        enterButton={<SearchOutlined />}
-      />
-      <UserOutlined style={{ fontSize: '24px', cursor: 'pointer' }} />
+      {isProfileSection && (
+        <Search
+          placeholder="Search for skills or services"
+          style={{ width: '40%', maxWidth: '400px' }}
+          enterButton={<SearchOutlined />}
+        />
+      )}
+      {isProfileSection && (
+        <Link to="/profile">
+          <UserOutlined style={{ fontSize: '24px', cursor: 'pointer' }} />
+        </Link>
+      )}
     </Header>
   );
 };
